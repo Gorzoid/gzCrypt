@@ -172,6 +172,25 @@ namespace gzCrypt
         return *this;
     }
 
+    biguint& biguint::operator*=(digit_t rhs)
+    {
+        biguint::wdigit_t carry = 0;
+
+        for(digit_t& digit : m_digits) // Iterate all digits
+        {
+            carry = carry + static_cast<wdigit_t>(digit) * rhs; // Promote to wide digit to avoid overflow.
+            digit = static_cast<digit_t>( carry ); // downcast back to 32bit to strip carry
+            carry >>= nbits; // rshift to move carry bit to LSB
+        }
+
+        if(carry > 0)
+            m_digits.push_back(static_cast<digit_t>(carry)); // Add carry to tail
+
+        trim(); // just in case
+            
+        return *this;
+    }
+
     std::pair<biguint,biguint> biguint::divrem(biguint dividend, const biguint& divisor)
     {
         if(!divisor) throw std::runtime_error("Divide by zero.");
@@ -201,13 +220,29 @@ namespace gzCrypt
         return lhs -= rhs;
     }
 
-    biguint operator*(biguint lhs, const biguint& rhs)
+    biguint& biguint::digit_lshift(size_t count)
     {
-        biguint ret{};
-        while(lhs)
+        m_digits.insert(m_digits.begin(), count, 0);
+        return *this;
+    }
+
+    biguint& biguint::digit_rshift(size_t count)
+    {
+        m_digits.erase(m_digits.begin(), std::next(m_digits.begin(),std::max(count,m_digits.size())));
+        return *this;
+    }
+
+    biguint operator*(const biguint& lhs, const biguint& rhs)
+    {
+        biguint ret = 0;
+
+        for(size_t i = 0; i < rhs.m_digits.size(); ++i)
         {
-            ret += rhs;
-            --lhs;
+            biguint x = lhs;
+            x *= rhs.m_digits[i];
+            x.digit_lshift(i);
+
+            ret += std::move(x);
         }
         return ret;
     }

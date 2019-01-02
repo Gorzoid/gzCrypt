@@ -37,11 +37,14 @@ namespace gzCrypt
         biguint& operator+=(const biguint& rhs);
         biguint& operator-=(const biguint& rhs);
 
-        template<typename T>
+        template<typename T, typename = std::enable_if_t<std::is_same<T,biguint>::value>>
         biguint& operator*=(T&& rhs)
         {
             return *this = std::move(*this) * std::forward<T>(rhs);
         }
+
+        biguint& operator*=(digit_t rhs);
+        friend biguint operator*(const biguint& lhs, const biguint& rhs);
 
         template<typename T>
         biguint& operator/=(T&& rhs)
@@ -57,13 +60,16 @@ namespace gzCrypt
     private:
 
         void trim();
-
+        
+        biguint& digit_lshift(size_t count = 1);
+        biguint& digit_rshift(size_t count = 1);
+        
         std::vector<digit_t> m_digits;
     };
 
     biguint operator+(biguint lhs, const biguint& rhs);
     biguint operator-(biguint lhs, const biguint& rhs);
-    biguint operator*(biguint lhs, const biguint& rhs);
+    biguint operator*(const biguint& lhs, const biguint& rhs);
     biguint operator/(biguint lhs, const biguint& rhs);
     biguint operator%(biguint lhs, const biguint& rhs);
 
@@ -81,7 +87,7 @@ namespace gzCrypt
     template<typename T, typename = std::enable_if_t<std::is_integral<std::remove_reference_t<T>>::value>>
 	biguint operator-(biguint lhs, T&& rhs) { return std::move(lhs) - biguint(std::forward<T>(rhs)); }
     template<typename T, typename = std::enable_if_t<std::is_integral<std::remove_reference_t<T>>::value>>
-	biguint operator*(biguint lhs, T&& rhs) { return std::move(lhs) * biguint(std::forward<T>(rhs)); }
+	biguint operator*(const biguint& lhs, T&& rhs) { return std::move(lhs) * biguint(std::forward<T>(rhs)); }
     template<typename T, typename = std::enable_if_t<std::is_integral<std::remove_reference_t<T>>::value>>
 	biguint operator/(biguint lhs, T&& rhs) { return std::move(lhs) / biguint(std::forward<T>(rhs)); }
     template<typename T, typename = std::enable_if_t<std::is_integral<std::remove_reference_t<T>>::value>>

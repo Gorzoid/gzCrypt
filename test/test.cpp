@@ -81,15 +81,15 @@ TEST(gzCrypt, UnsignedSubtraction)
 
 TEST(gzCrypt, UnsignedMultiplication)
 {
-    gzCrypt::biguint x = 9;
+    gzCrypt::biguint x = 4928548696_ubig;
 
-    gzCrypt::biguint y = 5;
+    gzCrypt::biguint y = 7205575275_ubig;
 
-    EXPECT_EQ(x * y, 45);
+    EXPECT_EQ(x * y, 35513028625531091400_ubig);
     EXPECT_EQ(x * 1, x);
     EXPECT_EQ(x * 0, 0);
 
-    EXPECT_EQ(y * x, 45);
+    EXPECT_EQ(y * x, 35513028625531091400_ubig);
     EXPECT_EQ(1 * x, x);
     EXPECT_EQ(0 * x, 0);
 }
