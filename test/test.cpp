@@ -1,13 +1,15 @@
 #include <gtest/gtest.h>
 #include <gzCrypt.hpp>
 
-TEST(gzCrypt, Comparison)
+
+TEST(gzCrypt, UnsignedComparison)
 {
-    gzCrypt::bigint x;
+    gzCrypt::biguint x;
+    EXPECT_EQ(x, 0);
 
-    gzCrypt::bigint y = 9;
+    gzCrypt::biguint y = 9;
 
-    gzCrypt::bigint z = 14;
+    gzCrypt::biguint z = 14;
 
     EXPECT_LT(x, y);
     EXPECT_LT(y, z);
@@ -26,36 +28,82 @@ TEST(gzCrypt, Comparison)
     EXPECT_NE(z, x);
 }
 
-
-TEST(gzCrypt, Addition)
+TEST(gzCrypt, UnsignedIncrement)
 {
-    gzCrypt::bigint x = 5;
+    gzCrypt::biguint x;
 
-    gzCrypt::bigint y = 9;
+    EXPECT_EQ(x++, 0);
+    EXPECT_EQ(x, 1);
 
-    gzCrypt::bigint z = 14;
-
-    EXPECT_EQ(x + y, z);
-
-    z = 0x7FFFFFFFFFFFFFFF;
-
-    EXPECT_GT(z + z, z);
-
-    EXPECT_GT(z + z + z, z + z);
-
-    EXPECT_GT(z + z + z + z, z + z + z);
+    EXPECT_EQ(++x, 2);
 
 }
 
-TEST(gzCrypt, NegativeAddition)
+
+TEST(gzCrypt, UnsignedAddition)
 {
-    gzCrypt::bigint x = -5;
+    gzCrypt::biguint x = 5;
 
-    gzCrypt::bigint y = 9;
+    gzCrypt::biguint y = 9;
 
-    gzCrypt::bigint z = 14;
-
-    EXPECT_EQ(x + y, z);
-    EXPECT_EQ(y + x, z);
+    ASSERT_EQ(x + y, 14);
+    ASSERT_EQ(y + x, 14);
 }
 
+TEST(gzCrypt, UnsignedDecrement)
+{
+    gzCrypt::biguint x = 2;
+
+    ASSERT_EQ(x--, 2);
+    ASSERT_EQ(x, 1);
+
+    ASSERT_EQ(--x, 0);
+
+    ASSERT_ANY_THROW(--x);
+
+}
+
+
+TEST(gzCrypt, UnsignedSubtraction)
+{
+    gzCrypt::biguint x = 9;
+
+    gzCrypt::biguint y = 5;
+
+    EXPECT_EQ(x - y, 4);
+    EXPECT_ANY_THROW(y - x);
+
+    EXPECT_EQ(x - 0, x);
+
+    EXPECT_EQ(x - x, 0);
+}
+
+TEST(gzCrypt, UnsignedMultiplication)
+{
+    gzCrypt::biguint x = 9;
+
+    gzCrypt::biguint y = 5;
+
+    EXPECT_EQ(x * y, 45);
+    EXPECT_EQ(x * 1, x);
+    EXPECT_EQ(x * 0, 0);
+
+    EXPECT_EQ(y * x, 45);
+    EXPECT_EQ(1 * x, x);
+    EXPECT_EQ(0 * x, 0);
+}
+
+TEST(gzCrypt, UnsignedDivision)
+{
+    gzCrypt::biguint x = 9;
+
+    gzCrypt::biguint y = 5;
+
+    EXPECT_EQ(x / y, 1);
+    EXPECT_EQ(x / 1, x);
+    EXPECT_ANY_THROW(x / 0);
+
+    EXPECT_EQ(y / x, 0);
+    EXPECT_EQ(1 / y, 0);
+    EXPECT_EQ(0 / y, 0);
+}
