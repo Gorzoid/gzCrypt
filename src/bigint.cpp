@@ -2,19 +2,49 @@
 #include <algorithm>
 #include <iterator>
 #include <cctype>
+#include <sstream>
+#include <string>
 
 namespace gzCrypt
 {
 
     std::istream& operator>>(std::istream& is, biguint& x)
     {
-        throw std::runtime_error("Not implemented.");
+        x.m_digits.clear();
+
+        char c;
+        if(!(is >> c) || !std::isdigit(c))
+        {
+            is.setstate(std::ios::failbit);
+            return is;
+        }
+
+        x = c - '0';
+
+        while(is >> c)
+        {
+            if(!std::isdigit(c))
+            {
+                is.unget();
+                break;
+            }
+            x = 10 * x + (c - '0');
+        }
         return is;
     }
 
     std::ostream& operator<<(std::ostream& os, const biguint& x)
     {
-        std::copy(x.m_digits.rbegin(), x.m_digits.rend(), std::ostream_iterator<int>(os << "0x" << std::hex));
+        auto it = std::find_if(x.m_digits.rbegin(), x.m_digits.rend(), [](biguint::digit_t digit) {return digit != 0;});
+        
+        if(it == x.m_digits.rend())
+        {
+            return os << "0";
+        }
+        else
+        {
+            std::copy(it, x.m_digits.rend(), std::ostream_iterator<int>(os << "0x" << std::hex));
+        }
         return os;
     }
 
@@ -247,4 +277,18 @@ namespace gzCrypt
     {
         return biguint::compare(lhs,rhs) <= 0;
     }
+
+    namespace bigint_literals
+    {
+        biguint operator ""_ubig(const char* str)
+        {
+            std::istringstream ss{ std::string{str} };
+
+            biguint ret;
+            ss >> ret;
+
+            return ret;
+        }
+    }
+
 }

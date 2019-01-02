@@ -124,4 +124,9 @@ namespace gzCrypt
     template<typename T, typename = std::enable_if_t<std::is_integral<std::remove_reference_t<T>>::value>>
 	bool operator<=(T&& lhs, const biguint& rhs) { return biguint(std::forward<T>(lhs)) <= rhs; }
 
+    namespace bigint_literals
+    {
+        biguint operator ""_ubig(const char* str);
+        biguint operator ""_ubig(long double x) = delete;
+    }
 }

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <gzCrypt.hpp>
 
+using namespace gzCrypt::bigint_literals;
 
 TEST(gzCrypt, UnsignedComparison)
 {
@@ -95,11 +96,11 @@ TEST(gzCrypt, UnsignedMultiplication)
 
 TEST(gzCrypt, UnsignedDivision)
 {
-    gzCrypt::biguint x = 9;
+    gzCrypt::biguint x = 92312_ubig;
 
     gzCrypt::biguint y = 5;
 
-    EXPECT_EQ(x / y, 1);
+    EXPECT_EQ(x / y, 18462_ubig);
     EXPECT_EQ(x / 1, x);
     EXPECT_ANY_THROW(x / 0);
 
